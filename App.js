@@ -15,54 +15,43 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Onboard from './screens/onboarding'
 
-
+const Spacer = () => <View style={styles.spacing} />;
 
 function Onboarding({ navigation }) {
   return (
-    <Onboard />
-    // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    //   <Text>Home Screen</Text>
-    // <Button
-    //   title="Go to Profile"
-    // onPress={() =>
-    //   navigation.navigate('Profile', { name: 'Custom profile header' })
-    //   }
-    // />
-    // </View>
-    // <View style={styles.container}>
-    //   <Image style={styles.image} source={require('./assets/logo.png')} />
-    //   <Spacer />
-    //   <Text style={styles.title}>
-    //     Capture and share first person narratives of complex social experiences
-    //   </Text>
-    //   <Spacer />
-    //
-    //   <Button
-    //     title="Login with Email"
-    //     color="#f08f80"
-    //     onPress={() =>
-    //       navigation.navigate('Login with Email', { name: 'Login with Email' })
-    //     }
-    //   />
-    //   <Spacer />
-    //   <Spacer />
-    //   <Button
-    //     title="Login with Project ID"
-    //     color="#f08f80"
-    //     onPress={() => navigation.navigate('Login with Project ID', { name: 'Login with Project ID' })}
-    //   />
-    //   <Spacer />
-    //
-    //
-    //   <Text style={styles.miniText}>
-    //     By clicking continue, you agree to Soapbox’s Terms of Service and
-    //     Privacy Policy.
-    //   </Text>
-    //   <Spacer />
-    // </View>
 
+    <View style={styles.container}>
+      <Image style={styles.image} source={require('./assets/logo.png')} />
+      <Spacer />
+      <Text style={styles.title}>
+        Capture and share first person narratives of complex social experiences
+      </Text>
+      <Spacer />
+
+      <Button
+        title="Login with Email"
+        color="#f08f80"
+        onPress={() =>
+          navigation.navigate('Login with Email', { name: 'Login with Email' })
+        }
+      />
+      <Spacer />
+      <Spacer />
+      <Button
+        title="Login with Project ID"
+        color="#f08f80"
+        onPress={() => navigation.navigate('Login with Project ID', { name: 'Login with Project ID' })}
+      />
+      <Spacer />
+
+
+      <Text style={styles.miniText}>
+        By clicking continue, you agree to Soapbox’s Terms of Service and
+        Privacy Policy.
+      </Text>
+      <Spacer />
+    </View>
   );
 }
 
