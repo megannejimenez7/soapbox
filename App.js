@@ -11,7 +11,12 @@ import {
   Image,
   TextInput,
   Switch,
-  Modal
+  Modal,
+  FlatList,
+  TouchableOpacity,
+  Picker,
+  ScrollView,
+  KeyboardAvoidingView
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -61,6 +66,10 @@ function WithEmail({ navigation }) {
     //   <Text>Profile screen</Text>
     //   <Button title="Go back" onPress={() => navigation.goBack()} />
     // </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior="padding"
+    >
     <View style={styles.container}>
       <Image style={styles.image} source={require('./assets/logo.png')} />
       <Spacer />
@@ -70,28 +79,12 @@ function WithEmail({ navigation }) {
       <Spacer />
       <View style={styles.boxes}>
         <TextInput
-          style={{
-            height: 60,
-            width: 300,
-            borderColor: 'gray',
-            borderBottomWidth: 1.5,
-            padding: 0,
-            fontSize: 18,
-            alignItems: 'center',
-          }}
+          style={styles.tInput}
           placeholder="Email"
         />
         <Spacer />
         <TextInput
-          style={{
-            height: 60,
-            width: 300,
-            borderColor: 'gray',
-            borderBottomWidth: 1.5,
-            padding: 0,
-            fontSize: 18,
-            alignItems: 'center',
-          }}
+          style={styles.tInput}
           placeholder="Password"
         />
       </View>
@@ -101,7 +94,7 @@ function WithEmail({ navigation }) {
         title="Login"
         color="#f08f80"
         onPress={() =>
-          navigation.navigate('Consent Form', { name: 'Consent Form' })
+          navigation.navigate('Project Page', { name: 'Project Page' })
         }
       />
       <Spacer />
@@ -113,6 +106,7 @@ function WithEmail({ navigation }) {
       <Spacer />
       <Spacer />
     </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -122,6 +116,10 @@ function WithID({ navigation }) {
     //   <Text>Profile screen</Text>
     //   <Button title="Go back" onPress={() => navigation.goBack()} />
     // </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior="padding"
+    >
     <View style={styles.container}>
       <Image style={styles.image} source={require('./assets/logo.png')} />
       <Spacer />
@@ -147,7 +145,7 @@ function WithID({ navigation }) {
         title="Login"
         color="#f08f80"
         onPress={() =>
-          navigation.navigate('Consent Form', { name: 'Consent Form' })
+          navigation.navigate('Interviews', { name: 'Interviews' })
         }
       />
       </View>
@@ -158,6 +156,7 @@ function WithID({ navigation }) {
       <Spacer />
       <Spacer />
     </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -267,9 +266,11 @@ function ConsentForm({ navigation }) {
               <Button
                 title="Continue"
                 color="#f08f80"
+
                 onPress={() => {
-                setModalVisible(!modalVisible);
+                setModalVisible(false)
               }}
+
               />
             </View>
           </View>
@@ -280,15 +281,361 @@ function ConsentForm({ navigation }) {
         <Button
           title="Done"
           color="#f08f80"
-          onPress={() => {
-          setModalVisible(true);
-        }}
+          onPress={() =>
+            navigation.navigate('IntDescription', { name: 'IntDescription' })
+          }
         />
       </View>
     </View>
   );
 }
 
+
+const DATA = [
+  {
+    id: 'p1',
+    title: 'Project 1',
+    nav: 'Interviews'
+  },
+  {
+    id: 'p2',
+    title: 'Project 2',
+    nav: 'Consent Form'
+  },
+  {
+    id: 'p3',
+    title: 'Project 3',
+    nav: 'Consent Form'
+  },
+];
+
+const Item = ({ item, onPress, style }) => (
+  <TouchableOpacity
+    onPress={onPress} style={[styles.item, style]}>
+    <Text style={styles.listtitle}>{item.title}</Text>
+  </TouchableOpacity>
+);
+
+function ProjectPage({ navigation }) {
+  const [selectedId, setSelectedId] = useState(null);
+  const renderItem = ({ item }) => {
+    const backgroundColor = item.id === selectedId ? "#f08f80" : "#f08f80";
+
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        onPress={() =>
+          navigation.navigate(item.nav, { name: item.nav })}
+        style={{ backgroundColor }}
+      />
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={DATA}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          extraData={selectedId}
+        />
+      </SafeAreaView>
+
+    </View>
+
+
+  );
+}
+
+const INTDATA = [
+  {
+    id: 'int1',
+    title: 'John Smith',
+    nav: 'IntDetails'
+  },
+];
+function Interviews({ navigation }) {
+  const [selectedId, setSelectedId] = useState(null);
+  const renderItem = ({ item }) => {
+    const backgroundColor = item.id === selectedId ? "#f08f80" : "#f08f80";
+
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        onPress={() =>
+          navigation.navigate(item.nav, { name: item.nav })}
+        style={{ backgroundColor }}
+      />
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={INTDATA}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          extraData={selectedId}
+        />
+      </SafeAreaView>
+
+      <Button
+        title="Add Interview"
+        color="#f08f80"
+        onPress={() =>
+          navigation.navigate('Consent Form', { name: 'Consent Form' })
+        }
+      />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+    </View>
+  );
+}
+
+function IntDescription({ navigation }) {
+
+      return (
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior="padding"
+        >
+        <ScrollView>
+        <View style={styles.container}>
+
+          <View style={styles.boxes}>
+            <TextInput style={styles.tInput}
+              placeholder="Project Name"
+            />
+
+            <Spacer />
+
+            <TextInput style={styles.tInput}
+              placeholder="Project Description"
+            />
+
+            <Spacer />
+
+            <TextInput style={styles.tInput}
+              placeholder="Project Contact"
+            />
+
+            <Spacer />
+
+          </View>
+
+          <Picker
+            style={styles.onePicker} itemStyle={styles.onePickerItem}
+            onValueChange={(value) => console.log(value)}
+            placeholder="Gender"
+          >
+            <Picker.Item label='Gender' value=''/>
+            <Picker.Item label="Male" value="male"/>
+            <Picker.Item label="Female" value="female"/>
+            <Picker.Item label="Non-Binary" value="nonBinary" />
+            <Picker.Item label="Prefer not to say" value="na" />
+          </Picker>
+
+
+          <Picker
+            style={styles.onePicker} itemStyle={styles.onePickerItem}
+            onValueChange={(value) => console.log(value)}
+          >
+            <Picker.Item label='Race' value=''/>
+            <Picker.Item label="American Indian" value="americanIndian" />
+            <Picker.Item label="Asian" value="asian" />
+            <Picker.Item label="Black or African American" value="black" />
+            <Picker.Item label="Native Hawaiian" value="hawaiian" />
+            <Picker.Item label="White" value="white" />
+            <Picker.Item label="Other" value="other" />
+            <Picker.Item label="Prefer not to say" value="na" />
+          </Picker>
+
+          <View style={styles.boxes}>
+          <TextInput style={styles.tInput}
+            placeholder="Age"
+          />
+
+          <Spacer />
+
+          <TextInput style={styles.tInput}
+            placeholder="Date of Recording"
+          />
+
+          <Spacer />
+
+          <TextInput style={styles.tInput}
+            placeholder="Location"
+          />
+
+          <Spacer />
+
+          <TextInput style={styles.tInput}
+            placeholder="Tags"
+          />
+
+          <Spacer />
+
+          </View>
+
+          <View style={styles.button}>
+          <Button
+            title="Next"
+            color="#f08f80"
+            // onPress={() =>
+            //   navigation.navigate('Consent Form', { name: 'Consent Form' })
+            // }
+          />
+        </View>
+
+        </View>
+        </ScrollView>
+        </KeyboardAvoidingView>
+      );
+
+}
+
+const JOHNDATA = [
+  {
+    id: 'consentF',
+    title: 'Consent Form',
+    nav: 'John Smith'
+  },
+  {
+    id: 'IntDes',
+    title: 'Interview Description',
+    nav: 'John Smith'
+  },
+  {
+    id: 'audios',
+    title: 'Audio 1',
+    nav: 'John Smith'
+  },
+];
+function IntDetails({ navigation }) {
+  const [selectedId, setSelectedId] = useState(null);
+  const renderItem = ({ item }) => {
+    const backgroundColor = item.id === selectedId ? "#f08f80" : "#f08f80";
+
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        onPress={() =>
+          navigation.navigate(item.nav, { name: item.nav })}
+        style={{ backgroundColor }}
+      />
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={JOHNDATA}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          extraData={selectedId}
+        />
+      </SafeAreaView>
+      <Button
+        title="Add Recording"
+        color="#f08f80"
+        onPress={() =>
+          navigation.navigate('QuickAdd', { name: 'QuickAdd' })
+        }
+      />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Button
+        title="Upload to Database"
+        color="#f08f80"
+        // onPress={() =>
+        //   navigation.navigate('Consent Form', { name: 'Consent Form' })
+        // }
+      />
+
+      <Spacer />
+      <Spacer />
+      <Spacer />
+      <Spacer />
+    </View>
+  );
+}
+
+const QUICKADD = [
+  {
+    id: 'aud',
+    title: 'New Audio Recording',
+    nav: 'John Smith'
+  },
+  {
+    id: 'vid',
+    title: 'New Video Recording',
+    nav: 'John Smith'
+  },
+  {
+    id: 'note',
+    title: 'New Note',
+    nav: 'John Smith'
+  },
+];
+function QuickAdd({ navigation }) {
+  const [selectedId, setSelectedId] = useState(null);
+  const renderItem = ({ item }) => {
+    const backgroundColor = item.id === selectedId ? "#f08f80" : "#f08f80";
+
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        onPress={() =>
+          navigation.navigate(item.nav, { name: item.nav })}
+        style={{ backgroundColor }}
+      />
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={QUICKADD}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          extraData={selectedId}
+        />
+      </SafeAreaView>
+
+    </View>
+  );
+}
+
+function Notes({ navigation }) {
+  return(
+    <TextInput
+      style={styles.tInput}
+      placeholder="Email"
+    />
+  );
+}
 
 const Stack = createStackNavigator();
 
@@ -314,6 +661,36 @@ function App() {
         <Stack.Screen
           name="Consent Form"
           component={ConsentForm}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
+          name="Project Page"
+          component={ProjectPage}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
+          name="Interviews"
+          component={Interviews}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
+          name="IntDescription"
+          component={IntDescription}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
+          name="IntDetails"
+          component={IntDetails}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
+          name="QuickAdd"
+          component={QuickAdd}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
+          name="Notes"
+          component={Notes}
           options={({ route }) => ({ title: route.params.name })}
         />
       </Stack.Navigator>
@@ -402,6 +779,35 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5
+  },
+  item: {
+    justifyContent: 'center',
+    backgroundColor: '#f08f80',
+    marginVertical: 1,
+    height: 60,
+  },
+  listtitle: {
+    color: 'white',
+    textAlign: 'left',
+    fontSize: 18,
+    marginLeft: 15,
+  },
+  tInput: {
+    height: 60,
+    width: 300,
+    borderColor: 'gray',
+    borderBottomWidth: 1.5,
+    padding: 0,
+    fontSize: 18,
+    alignItems: 'center',
+  },
+  onePicker: {
+    color: '#f08f80',
+    marginBottom: 20
+  },
+  onePickerItem: {
+
+    color: '#f08f80'
   },
 });
 
