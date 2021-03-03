@@ -594,7 +594,7 @@ const QUICKADD = [
   {
     id: 'note',
     title: 'New Note',
-    nav: 'John Smith'
+    nav: 'Notes'
   },
 ];
 function QuickAdd({ navigation }) {
@@ -630,10 +630,26 @@ function QuickAdd({ navigation }) {
 
 function Notes({ navigation }) {
   return(
-    <TextInput
-      style={styles.tInput}
-      placeholder="Email"
+    <View style={styles.noteCon}>
+    <View style={styles.rectangle}>
+      <TextInput
+        style={styles.noteInput}
+        placeholder="Notes"
+      />
+
+    </View>
+    <Spacer />
+    <Spacer />
+
+    <Button
+      title="Add"
+      color="#f08f80"
+      // onPress={() =>
+      //   navigation.navigate('Consent Form', { name: 'Consent Form' })
+      // }
     />
+    </View>
+
   );
 }
 
@@ -808,6 +824,27 @@ const styles = StyleSheet.create({
   onePickerItem: {
 
     color: '#f08f80'
+  },
+  noteCon: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: 'white'
+  },
+  noteInput: {
+    height: 60,
+    width: 300,
+    marginTop: 20,
+    fontSize: 18,
+    alignItems: 'center',
+  },
+  rectangle: {
+    marginVertical: 35,
+    marginHorizontal:10,
+    height: 500,
+    width: 350,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    borderRadius: 30
   },
 });
 
