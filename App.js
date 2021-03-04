@@ -28,7 +28,7 @@ function Onboarding({ navigation }) {
   return (
 
     <View style={styles.container}>
-      <Image style={styles.image} source={require('./assets/logo.png')} />
+      <Image style={styles.image} source={require('./assets/logo.jpeg')} />
       <Spacer />
       <Text style={styles.title}>
         Capture and share first person narratives of complex social experiences
@@ -72,7 +72,7 @@ function WithEmail({ navigation }) {
       behavior="padding"
     >
     <View style={styles.container}>
-      <Image style={styles.image} source={require('./assets/logo.png')} />
+      <Image style={styles.image} source={require('./assets/logo.jpeg')} />
       <Spacer />
       <Text style={styles.title}>
         Capture and share first person narratives of complex social experiences
@@ -122,7 +122,7 @@ function WithID({ navigation }) {
       behavior="padding"
     >
     <View style={styles.container}>
-      <Image style={styles.image} source={require('./assets/logo.png')} />
+      <Image style={styles.image} source={require('./assets/logo.jpeg')} />
       <Spacer />
       <Text style={styles.title}>
         Capture and share first person narratives of complex social experiences
@@ -590,7 +590,7 @@ const QUICKADD = [
   {
     id: 'vid',
     title: 'New Video Recording',
-    nav: 'John Smith'
+    nav: 'RecVideo'
   },
   {
     id: 'note',
@@ -689,6 +689,7 @@ function RecAudio({ navigation }) {
     setRec(true)
   }
 
+
   async function playSound() {
     console.log('Loading Sound');
     const { sound } = await Audio.Sound.createAsync(uriLoc);
@@ -724,13 +725,75 @@ function RecAudio({ navigation }) {
 
     </View>
     // <TouchableOpacity>
-    //   <Image style={styles.micImage} source={require('./assets/microphone.png')} />
+    //   <Image style={styles.micImage} source={require('./assets/microphone.jpeg')} />
     //   <View style={styles.SeparatorLine} />
     //   <Text style={styles.TextStyle} > Record </Text>
     // </TouchableOpacity>
   );
 }
 
+// function RecVideo({ navigation }) {
+//   const [recording, setRecording] = React.useState();
+//   const [sound, setSound] = React.useState();
+//   const [uriLoc, setUriLoc] = React.useState();
+//   const [rec, setRec] = React.useState(false);
+//
+//   async function startRecording() {
+//     try {
+//       console.log('Requesting permissions..');
+//       await Audio.requestPermissionsAsync();
+//       await Audio.setAudioModeAsync({
+//         allowsRecordingIOS: true,
+//         playsInSilentModeIOS: true,
+//       });
+//       console.log('Starting recording..');
+//       const recording = new Audio.Recording();
+//       await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+//       await recording.startAsync();
+//       setRecording(recording);
+//       console.log('Recording started');
+//     } catch (err) {
+//       console.error('Failed to start recording', err);
+//     }
+//   }
+
+function RecVideo() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+  return (
+    <View style={styles.container}>
+      <Camera style={styles.camera} type={type}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.buttonV}
+            onPress={() => {
+              setType(
+                type === Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back
+              );
+            }}>
+            <Text style={styles.text}> Flip </Text>
+          </TouchableOpacity>
+        </View>
+      </Camera>
+    </View>
+  );
+}
 
 const Stack = createStackNavigator();
 
@@ -791,6 +854,11 @@ function App() {
         <Stack.Screen
           name="RecAudio"
           component={RecAudio}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
+          name="RecVideo"
+          component={RecVideo}
           options={({ route }) => ({ title: route.params.name })}
         />
 
@@ -877,9 +945,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5
   },
   item: {
     justifyContent: 'center',
@@ -943,6 +1011,24 @@ const styles = StyleSheet.create({
     height: 80,
     alignSelf: "center",
   },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    margin: 20,
+  },
+  buttonV: {
+    flex: 0.1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+  }
 });
 
 export default App;
