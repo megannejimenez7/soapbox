@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Audio } from 'expo-av';
 
 const Spacer = () => <View style={styles.spacing} />;
 
@@ -584,7 +585,7 @@ const QUICKADD = [
   {
     id: 'aud',
     title: 'New Audio Recording',
-    nav: 'John Smith'
+    nav: 'RecAudio'
   },
   {
     id: 'vid',
@@ -653,6 +654,84 @@ function Notes({ navigation }) {
   );
 }
 
+function RecAudio({ navigation }) {
+  const [recording, setRecording] = React.useState();
+  const [sound, setSound] = React.useState();
+  const [uriLoc, setUriLoc] = React.useState();
+  const [rec, setRec] = React.useState(false);
+
+  async function startRecording() {
+    try {
+      console.log('Requesting permissions..');
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      console.log('Starting recording..');
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+      await recording.startAsync();
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    console.log('Stopping recording..');
+    setRecording(undefined);
+    await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();
+    setUriLoc(uri)
+    console.log('Recording stopped and stored at', uri);
+    setRec(true)
+  }
+
+  async function playSound() {
+    console.log('Loading Sound');
+    const { sound } = await Audio.Sound.createAsync(uriLoc);
+    setSound(sound);
+
+    console.log('Playing Sound');
+    await sound.playAsync(); }
+
+  React.useEffect(() => {
+    return sound
+      ? () => {
+          console.log('Unloading Sound');
+          sound.unloadAsync(); }
+      : undefined;
+  }, [sound]);
+
+
+  return (
+
+    <View style={styles.audio}>
+
+      <Button
+        title={recording ? 'Stop Recording' : 'Start Recording'}
+        onPress={recording ? stopRecording : startRecording}
+        color='#f08f80'
+      />
+
+      <Button
+        title={rec ? 'Play' : ''}
+        onPress={playSound}
+        color='#f08f80'
+      />
+
+    </View>
+    // <TouchableOpacity>
+    //   <Image style={styles.micImage} source={require('./assets/microphone.png')} />
+    //   <View style={styles.SeparatorLine} />
+    //   <Text style={styles.TextStyle} > Record </Text>
+    // </TouchableOpacity>
+  );
+}
+
+
 const Stack = createStackNavigator();
 
 function App() {
@@ -709,6 +788,12 @@ function App() {
           component={Notes}
           options={({ route }) => ({ title: route.params.name })}
         />
+        <Stack.Screen
+          name="RecAudio"
+          component={RecAudio}
+          options={({ route }) => ({ title: route.params.name })}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -845,6 +930,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     alignItems: 'center',
     borderRadius: 30
+  },
+  audio: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    color: '#f08f80',
+    padding: 10,
+  },
+  micImage: {
+    width: 80,
+    height: 80,
+    alignSelf: "center",
   },
 });
 
