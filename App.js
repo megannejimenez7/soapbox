@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState }from 'react';
+import { useState, useEffect }from 'react';
 import {
   StyleSheet,
   Button,
@@ -21,6 +21,7 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Audio } from 'expo-av';
+import { Camera } from 'expo-camera';
 
 const Spacer = () => <View style={styles.spacing} />;
 
