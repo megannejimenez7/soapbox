@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState, useEffect }from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Button,
@@ -22,34 +22,54 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Audio } from 'expo-av';
 import { Camera } from 'expo-camera';
+import firebase from '@react-native-firebase/app'
+import storage from '@react-native-firebase/storage';
+import { utils } from '@react-native-firebase/app';
+import { HeaderBackButton } from '@react-navigation/stack';
+
 
 const Spacer = () => <View style={styles.spacing} />;
-
+console.log(" ")
+//require('./assets/logo.png')
 function Onboarding({ navigation }) {
+
+  var reference = firebase.storage().ref('Users/logo2.png');
+  var url = reference.getDownloadURL()
+  .then((url) => {
+  image = 'hello'
+  image = url
+
+    })
+
   return (
 
     <View style={styles.container}>
-      <Image style={styles.image} source={require('./assets/logo.jpeg')} />
+      <Image style={styles.image} source={require('./assets/logo.png') } />
       <Spacer />
       <Text style={styles.title}>
         Capture and share first person narratives of complex social experiences
       </Text>
       <Spacer />
+      <View style={styles.roundButton}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('Login with Email', { name: 'Login with Email' })
+          }>
+          <Text style={styles.login} > Login with Email </Text>
 
-      <Button
-        title="Login with Email"
-        color="#f08f80"
-        onPress={() =>
-          navigation.navigate('Login with Email', { name: 'Login with Email' })
-        }
-      />
+        </TouchableOpacity>
+      </View>
       <Spacer />
       <Spacer />
-      <Button
-        title="Login with Project ID"
-        color="#f08f80"
-        onPress={() => navigation.navigate('Login with Project ID', { name: 'Login with Project ID' })}
-      />
+      <View style={styles.roundButton}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Login with Project ID', { name: 'Login with Project ID' })}>
+          <Text style={styles.login} > Login with Project ID </Text>
+
+        </TouchableOpacity>
+      </View>
+
+      <Spacer />
       <Spacer />
 
 
@@ -62,18 +82,29 @@ function Onboarding({ navigation }) {
   );
 }
 
+function signingIn(email, password){
+  firebase.auth().signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    // Signed in
+    var user = userCredential.user;
+    // ...
+  })
+  .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+  });
+}
+
 function WithEmail({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
-    // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    //   <Text>Profile screen</Text>
-    //   <Button title="Go back" onPress={() => navigation.goBack()} />
-    // </View>
     <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
     >
     <View style={styles.container}>
-      <Image style={styles.image} source={require('./assets/logo.jpeg')} />
+      <Image style={styles.image} source={require('./assets/logo.png')} />
       <Spacer />
       <Text style={styles.title}>
         Capture and share first person narratives of complex social experiences
@@ -83,47 +114,51 @@ function WithEmail({ navigation }) {
         <TextInput
           style={styles.tInput}
           placeholder="Email"
+          onChangeText={email => setEmail(email)}
+          defaultValue={email}
         />
         <Spacer />
         <TextInput
           style={styles.tInput}
           placeholder="Password"
+          onChangeText={password => setPassword(password)}
+          defaultValue={password}
         />
       </View>
       <Spacer />
-
-      <Button
-        title="Login"
-        color="#f08f80"
+      <Spacer />
+      <View style={styles.roundButton}>
+        <TouchableOpacity
         onPress={() =>
           navigation.navigate('Project Page', { name: 'Project Page' })
-        }
-      />
+        }>
+          <Text style={styles.login} > Login </Text>
+        </TouchableOpacity>
+      </View>
+
+      <Spacer />
+      <Spacer />
       <Spacer />
       <View style={styles.miniCon}>
         <Text style={styles.miniCon}>Forgot Password</Text>
       </View>
       <Spacer />
       <Spacer />
-      <Spacer />
-      <Spacer />
+
     </View>
     </KeyboardAvoidingView>
+
   );
 }
 
 function WithID({ navigation }) {
   return (
-    // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    //   <Text>Profile screen</Text>
-    //   <Button title="Go back" onPress={() => navigation.goBack()} />
-    // </View>
     <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
     >
     <View style={styles.container}>
-      <Image style={styles.image} source={require('./assets/logo.jpeg')} />
+      <Image style={styles.image} source={require('./assets/logo.png')} />
       <Spacer />
       <Text style={styles.title}>
         Capture and share first person narratives of complex social experiences
@@ -142,14 +177,17 @@ function WithID({ navigation }) {
           }}
           placeholder="Project ID"
         />
-      <Spacer />
-      <Button
-        title="Login"
-        color="#f08f80"
+        <Spacer />
+        <Spacer />
+      </View>
+
+      <View style={styles.roundButton}>
+        <TouchableOpacity
         onPress={() =>
           navigation.navigate('Interviews', { name: 'Interviews' })
-        }
-      />
+        }>
+          <Text style={styles.login} > Login </Text>
+        </TouchableOpacity>
       </View>
       <Spacer />
       <Spacer />
@@ -188,9 +226,9 @@ function ConsentForm({ navigation }) {
           I consent for my audio file to be used
         </Text>
         <Switch
-          trackColor={{ false: "#767577", true: "#0dd417" }}
-          thumbColor={isEnabled ? "#8dfc93" : "#f4f3f4"}
-          ios_backgroundColor="#c91212"
+          trackColor={{ false: "#767577", true: "#f08f80" }}
+          thumbColor={isEnabled ? "#f0f0f0" : "#f4f3f4"}
+          ios_backgroundColor="#9e9e9e"
           onValueChange={toggleSwitch}
           value={isEnabled}
         />
@@ -200,9 +238,9 @@ function ConsentForm({ navigation }) {
           I consent for my video file to be used
         </Text>
         <Switch
-          trackColor={{ false: "#767577", true: "#0dd417" }}
-          thumbColor={isEnabled2 ? "#8dfc93" : "#f4f3f4"}
-          ios_backgroundColor="#c91212"
+          trackColor={{ false: "#767577", true: "#f08f80" }}
+          thumbColor={isEnabled2 ? "#f0f0f0" : "#f4f3f4"}
+          ios_backgroundColor="#9e9e9e"
           onValueChange={toggleSwitch2}
           value={isEnabled2}
         />
@@ -212,9 +250,9 @@ function ConsentForm({ navigation }) {
           I am over 18
         </Text>
         <Switch
-          trackColor={{ false: "#767577", true: "#0dd417" }}
-          thumbColor={isEnabled3 ? "#8dfc93" : "#f4f3f4"}
-          ios_backgroundColor="#c91212"
+          trackColor={{ false: "#767577", true: "#f08f80" }}
+          thumbColor={isEnabled3 ? "#f0f0f0" : "#f4f3f4"}
+          ios_backgroundColor="#9e9e9e"
           onValueChange={toggleSwitch3}
           value={isEnabled3}
         />
@@ -224,9 +262,9 @@ function ConsentForm({ navigation }) {
           I am signing on behalf of someone under 18
         </Text>
         <Switch
-          trackColor={{ false: "#767577", true: "#0dd417" }}
-          thumbColor={isEnabled4 ? "#8dfc93" : "#f4f3f4"}
-          ios_backgroundColor="#c91212"
+          trackColor={{ false: "#767577", true: "#f08f80" }}
+          thumbColor={isEnabled4 ? "#f0f0f0" : "#f4f3f4"}
+          ios_backgroundColor="#9e9e9e"
           onValueChange={toggleSwitch4}
           value={isEnabled4}
         />
@@ -244,6 +282,7 @@ function ConsentForm({ navigation }) {
           }}
           placeholder="Sign Here"
         />
+
       <Spacer />
       <Spacer />
       <Spacer />
@@ -284,14 +323,15 @@ function ConsentForm({ navigation }) {
           title="Done"
           color="#f08f80"
           onPress={() =>
-            navigation.navigate('IntDescription', { name: 'IntDescription' })
+            navigation.navigate('Secondary Data', { name: 'Secondary Data' })
           }
         />
       </View>
+
     </View>
+
   );
 }
-
 
 const DATA = [
   {
@@ -302,12 +342,12 @@ const DATA = [
   {
     id: 'p2',
     title: 'Project 2',
-    nav: 'Consent Form'
+    nav: 'Interviews'
   },
   {
     id: 'p3',
     title: 'Project 3',
-    nav: 'Consent Form'
+    nav: 'Interviews'
   },
 ];
 
@@ -355,11 +395,17 @@ const INTDATA = [
   {
     id: 'int1',
     title: 'John Smith',
-    nav: 'IntDetails'
+    nav: 'Interview Details'
+  },
+  {
+    id: 'int2',
+    title: 'Jane Doe',
+    nav: 'Interview Details'
   },
 ];
 function Interviews({ navigation }) {
   const [selectedId, setSelectedId] = useState(null);
+  const [count, setCount] = React.useState(0);
   const renderItem = ({ item }) => {
     const backgroundColor = item.id === selectedId ? "#f08f80" : "#f08f80";
 
@@ -368,11 +414,23 @@ function Interviews({ navigation }) {
         item={item}
         onPress={() => setSelectedId(item.id)}
         onPress={() =>
-          navigation.navigate(item.nav, { name: item.nav })}
+          navigation.navigate(item.nav, { name: item.title })}
         style={{ backgroundColor }}
       />
     );
   };
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button onPress={() =>
+          navigation.navigate('Consent Form', { name: 'Consent Form' })
+        }
+        title="Add"
+        color="#f08f80" />
+      ),
+    });
+  }, [navigation]);
+
 
   return (
     <View style={styles.container}>
@@ -385,13 +443,6 @@ function Interviews({ navigation }) {
         />
       </SafeAreaView>
 
-      <Button
-        title="Add Interview"
-        color="#f08f80"
-        onPress={() =>
-          navigation.navigate('Consent Form', { name: 'Consent Form' })
-        }
-      />
       <Spacer />
       <Spacer />
       <Spacer />
@@ -417,19 +468,13 @@ function IntDescription({ navigation }) {
               placeholder="Project Name"
             />
 
-            <Spacer />
-
             <TextInput style={styles.tInput}
               placeholder="Project Description"
             />
 
-            <Spacer />
-
             <TextInput style={styles.tInput}
               placeholder="Project Contact"
             />
-
-            <Spacer />
 
           </View>
 
@@ -465,38 +510,30 @@ function IntDescription({ navigation }) {
             placeholder="Age"
           />
 
-          <Spacer />
-
           <TextInput style={styles.tInput}
             placeholder="Date of Recording"
           />
-
-          <Spacer />
 
           <TextInput style={styles.tInput}
             placeholder="Location"
           />
 
-          <Spacer />
-
           <TextInput style={styles.tInput}
             placeholder="Tags"
           />
 
-          <Spacer />
-
           </View>
-
-          <View style={styles.button}>
-          <Button
-            title="Next"
-            color="#f08f80"
-            // onPress={() =>
-            //   navigation.navigate('Consent Form', { name: 'Consent Form' })
-            // }
-          />
+          <Spacer />
+        <View style={styles.roundButton2}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Interviews', { name: 'Interviews' })
+            }>
+            <Text style={styles.login} > Add </Text>
+          </TouchableOpacity>
         </View>
-
+        <Spacer />
+        <Spacer />
         </View>
         </ScrollView>
         </KeyboardAvoidingView>
@@ -536,6 +573,16 @@ function IntDetails({ navigation }) {
       />
     );
   };
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button onPress={() =>
+          navigation.navigate('QuickAdd', { name: 'QuickAdd' })}
+        title="Add"
+        color="#f08f80" />
+      ),
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -547,13 +594,7 @@ function IntDetails({ navigation }) {
           extraData={selectedId}
         />
       </SafeAreaView>
-      <Button
-        title="Add Recording"
-        color="#f08f80"
-        onPress={() =>
-          navigation.navigate('QuickAdd', { name: 'QuickAdd' })
-        }
-      />
+
       <Spacer />
       <Spacer />
       <Spacer />
@@ -566,13 +607,7 @@ function IntDetails({ navigation }) {
       <Spacer />
       <Spacer />
       <Spacer />
-      <Button
-        title="Upload to Database"
-        color="#f08f80"
-        // onPress={() =>
-        //   navigation.navigate('Consent Form', { name: 'Consent Form' })
-        // }
-      />
+
 
       <Spacer />
       <Spacer />
@@ -625,32 +660,58 @@ function QuickAdd({ navigation }) {
           extraData={selectedId}
         />
       </SafeAreaView>
-
     </View>
   );
 }
+function sendNote(note, path1){
+  note.putFile(path1).then((snapshot) => {
+    console.log('Uploaded a blob or file!');
+    console.log('here!');
+
+  });
+
+}
 
 function Notes({ navigation }) {
+  const [text, setText] = React.useState('');
+  var note1 = firebase.storage().ref('Users/meganne/project1/note/note_' + Date.now() + '.caf');
+  var RNFS = require('react-native-fs');
+ // create a path you want to write to
+  var path = RNFS.DocumentDirectoryPath + '.txt';
+  RNFS.writeFile(path, text, 'utf8')
+  .then((success) => {
+   console.log('FILE WRITTEN!');
+  })
+  .catch((err) => {
+   console.log(err.message);
+  });
   return(
+    console.log(text),
+
+
     <View style={styles.noteCon}>
-    <View style={styles.rectangle}>
-      <TextInput
-        style={styles.noteInput}
-        placeholder="Notes"
-      />
+      <View style={styles.rectangle}>
+        <TextInput
+          style={styles.noteInput}
+          placeholder="Notes"
+          value={text}
+          onChangeText={text => setText(text)}
+        />
 
-    </View>
+      </View>
     <Spacer />
     <Spacer />
+    <View style={styles.roundButton2}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('Interview Details', { name: 'Interview Details' })
+          //sendNote(note1, path)
+        }>
 
-    <Button
-      title="Add"
-      color="#f08f80"
-      // onPress={() =>
-      //   navigation.navigate('Consent Form', { name: 'Consent Form' })
-      // }
-    />
+        <Text style={styles.login} > Add </Text>
+      </TouchableOpacity>
     </View>
+  </View>
 
   );
 }
@@ -681,6 +742,8 @@ function RecAudio({ navigation }) {
   }
 
   async function stopRecording() {
+    var audio1 = firebase.storage().ref('Users/meganne/project1/audio/audio_' + Date.now() + '.caf');
+
     console.log('Stopping recording..');
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
@@ -688,12 +751,14 @@ function RecAudio({ navigation }) {
     setUriLoc(uri)
     console.log('Recording stopped and stored at', uri);
     setRec(true)
+    audio1.putFile(uri).then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+    });
   }
-
 
   async function playSound() {
     console.log('Loading Sound');
-    const { sound } = await Audio.Sound.createAsync(uriLoc);
+    const { sound } = await Audio.Sound.createAsync(uri);
     setSound(sound);
 
     console.log('Playing Sound');
@@ -711,54 +776,26 @@ function RecAudio({ navigation }) {
   return (
 
     <View style={styles.audio}>
+      <View style={styles.roundButton}>
+        <Button
+          title={recording ? 'Stop Recording' : 'Start Recording'}
+          onPress={recording ? stopRecording : startRecording}
+          color='#ffffff'
+        />
+      </View>
+      <Spacer />
 
-      <Button
-        title={recording ? 'Stop Recording' : 'Start Recording'}
-        onPress={recording ? stopRecording : startRecording}
-        color='#f08f80'
-      />
-
-      <Button
-        title={rec ? 'Play' : ''}
-        onPress={playSound}
-        color='#f08f80'
-      />
+        <Button
+          title={rec ? 'Play' : ''}
+          onPress={playSound}
+          color='#f08f80'
+        />
 
     </View>
-    // <TouchableOpacity>
-    //   <Image style={styles.micImage} source={require('./assets/microphone.jpeg')} />
-    //   <View style={styles.SeparatorLine} />
-    //   <Text style={styles.TextStyle} > Record </Text>
-    // </TouchableOpacity>
   );
 }
 
-// function RecVideo({ navigation }) {
-//   const [recording, setRecording] = React.useState();
-//   const [sound, setSound] = React.useState();
-//   const [uriLoc, setUriLoc] = React.useState();
-//   const [rec, setRec] = React.useState(false);
-//
-//   async function startRecording() {
-//     try {
-//       console.log('Requesting permissions..');
-//       await Audio.requestPermissionsAsync();
-//       await Audio.setAudioModeAsync({
-//         allowsRecordingIOS: true,
-//         playsInSilentModeIOS: true,
-//       });
-//       console.log('Starting recording..');
-//       const recording = new Audio.Recording();
-//       await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-//       await recording.startAsync();
-//       setRecording(recording);
-//       console.log('Recording started');
-//     } catch (err) {
-//       console.error('Failed to start recording', err);
-//     }
-//   }
-
-function RecVideo({ navigation }) {
+function RecVideo() {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
 
@@ -806,63 +843,74 @@ function App() {
           name="Onboarding"
           component={Onboarding}
           options={{ title: 'Login' }}
+          options={{headerBackTitle: ' ' , headerTintColor: '#ffffff'}}
         />
         <Stack.Screen
           name="Login with Email"
           component={WithEmail}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="Login with Project ID"
           component={WithID}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="Consent Form"
           component={ConsentForm}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="Project Page"
           component={ProjectPage}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="Interviews"
           component={Interviews}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
-          name="IntDescription"
+          name="Secondary Data"
           component={IntDescription}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
-          name="IntDetails"
+          name="Interview Details"
           component={IntDetails}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="QuickAdd"
           component={QuickAdd}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="Notes"
           component={Notes}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="RecAudio"
           component={RecAudio}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
         <Stack.Screen
           name="RecVideo"
           component={RecVideo}
           options={({ route }) => ({ title: route.params.name })}
+          options={{headerBackTitle: ' ' , headerTintColor: '#f08f80'}}
         />
-
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -872,7 +920,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-end',
-    //marginHorizontal: 16,
     backgroundColor: 'white',
   },
   containerConsent: {
@@ -946,9 +993,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2
     },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
   item: {
     justifyContent: 'center',
@@ -1011,6 +1058,29 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     alignSelf: "center",
+  },
+  login: {
+    color: 'white',
+    fontSize: 19,
+
+  },
+  roundButton: {
+    justifyContent: 'center',
+    alignItems:'center',
+    backgroundColor: "#f08f80",
+    marginHorizontal: 80,
+    height: 50,
+    borderRadius: 30
+  },
+  roundButton2: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems:'center',
+    backgroundColor: "#f08f80",
+    marginHorizontal: 80,
+    height: 50,
+    width: 100,
+    borderRadius: 30
   },
   camera: {
     flex: 1,
